@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Precious's Hear Me Outs - Have fun rating characters from animations!">
+    <title>Precious's Hear Me Outs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sour+Gummy&display=swap" rel="stylesheet">
+
+    <!-- External Styles -->
+    <style>
+        body {
+            font-family: 'Sour Gummy', sans-serif;
+            background-color: #ffe4e1;
+            color: #333;
+            text-align: center;
+        }
+        #start-button, #start-rating-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #start-button:hover, #start-rating-button:hover {
+            background-color: #0056b3;
+        }
+        #account-section, #game-section, #results-section {
+            display: none;
+            padding: 50px;
+        }
+        .account-input {
+            font-size: 18px;
+            padding: 10px;
+            margin: 10px;
+            border: 2px solid #d63384;
+            border-radius: 5px;
+            outline: none;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        .buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .rate-button {
+            font-size: 14px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .real { background-color: #4CAF50; color: white; }
+        .umm { background-color: #FFC107; color: white; }
+        .not-valid { background-color: #FF5252; color: white; }
+        .real.selected { background-color: #2e8b57; }
+        .umm.selected { background-color: #ff8c00; }
+        .not-valid.selected { background-color: #ff0000; }
+    </style>
+</head>
+<body>
+    <!-- Welcome Section -->
+    <div id="welcome-section">
+        <h1>Welcome to Precious's Hear Me Outs! Have fun rating them</h1>
+        <button id="start-button">Start!</button>
+    </div>
+
+    <!-- Account Section -->
+    <div id="account-section">
+        <h2>Create Your Account</h2>
+        <input type="text" id="username" class="account-input" placeholder="Enter your name">
+        <button id="start-rating-button">Start Rating</button>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game-section">
+        <div id="slider"></div>
+        <div class="buttons">
+            <button id="next-button" style="display:none; font-size: 24px; padding: 15px 30px;">Next</button>
+        </div>
+        <div id="summary"></div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section">
+        <h2>Other Users' Ratings</h2>
+        <div id="accounts-list"></div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script>
+       const images = [
+    { url: "https://i.pinimg.com/736x/9b/87/a9/9b87a990d05fc474d9b33a7b85c25bbf.jpg", title: "Kuzco from 'The Emperor's New Groove'" },
+    { url: "https://i.pinimg.com/736x/14/a8/6b/14a86b3e6319644340d06d465466cb8b.jpg", title: "Human version of Megamind from 'Megamind'" },
+    { url: "https://i.pinimg.com/736x/1e/46/83/1e4683b316b4edc48ad1674bdd8a161c.jpg", title: "The Nutcracker from 'Barbie in the Nutcracker'" },
+    { url: "https://i.pinimg.com/736x/40/59/1a/40591a82acc523079d263dd9653ec95b.jpg", title: "Original Nesquik bunny" },
+    { url: "https://i.pinimg.com/736x/01/27/f8/0127f883d26217fdf8f07c669df10023.jpg", title: "Snufkin from 'Moomin Valley'" },
+    { url: "https://i.pinimg.com/736x/43/c6/da/43c6dad2f230f91065728693078b380a.jpg", title: "Victor from 'Leap'" },
+    { url: "https://i.pinimg.com/736x/b2/72/5f/b2725f1caa4365532bcedf832edcb498.jpg", title: "Pato from 'Pocoyo' (i was 8)" },
+    { url: "https://i.pinimg.com/736x/ce/19/39/ce1939cd2995ffba02169e2d66efd8d9.jpg", title: "Man in the yellow hat from 'Curious George Movie'" },
+    { url: "https://i.pinimg.com/736x/68/d9/32/68d932870c219abd3fe9c26e3879ed9c.jpg", title: "Prince Alexander from 'Veggietales'" },
+    { url: "https://i.pinimg.com/736x/c6/14/a0/c614a0d82efef8b6615bb469845bf81d.jpg", title: "Mariano Guzman from 'Encanto'" },
+    { url: "https://i.pinimg.com/736x/99/08/75/990875773d064588ade80cddf85a9dc1.jpg", title: "Ben 10" },
+    { url: "https://i.pinimg.com/736x/08/12/e1/0812e199fa62a46cbf443545cd7ee606.jpg", title: "Milo from 'Atlantis:The Lost Empire'" },
+    { url: "https://i.pinimg.com/736x/46/8a/5f/468a5f93367c44b906e8eadc602ea906.jpg", title: "BEAST BOY (all versions tbh)" },
+    { url: "https://i.pinimg.com/736x/73/b9/ad/73b9ad478286770523794c8f72b9170e.jpg", title: "Cole from Ninjago" },
+    { url: "https://i.pinimg.com/736x/14/3d/71/143d7191b7cd7ffc5942847bde3f2d27.jpg", title: "Tramp from 'The Lady and the Tramp'" },
+    { url: "https://i.pinimg.com/736x/97/06/eb/9706eb7a1089d6ceed826c98cfc36d51.jpg", title: "Marco from 'Star Vs forces of evil'" },
+    { url: "https://i.pinimg.com/736x/88/45/2e/88452edbfcef965ff7b6d7b85c0514b1.jpg", title: "Q*Bert from 'Wreck it Ralph'" },
+    { url: "https://i.pinimg.com/736x/e4/19/be/e419be1065ff35fc6e98a0fcd51ab89f.jpg", title: "Ashitaka from 'Princess Mononoke'" },
+    { url: "https://i.pinimg.com/736x/60/e3/38/60e338c45b255123b550332eac8bf9b4.jpg", title: "Kick Buttowski" },
+    { url: "https://i.pinimg.com/736x/8b/25/70/8b2570a8602b5458516d93b62ab272b5.jpg", title: "Selenia from 'Arthur and the Invisibles'" },
+    { url: "https://i.pinimg.com/736x/6e/2b/e4/6e2be41d9da7591fe07660b1e6506b2c.jpg", title: "Audrey from 'Atlantis: The Lost Empire'" },
+    { url: "https://i.pinimg.com/736x/ab/e0/3f/abe03f6f660c59380f07b44728b1dbb7.jpg", title: "Hiccup and Astrid from 'How to train your Dragon'" },
+    { url: "https://i.pinimg.com/736x/4a/84/2a/4a842aaa285db30f31af181dc4afd0be.jpg", title: "Kovu from Lion King" },
+    { url: "https://i.pinimg.com/736x/d7/1a/ea/d71aea1ee9c167790deae43782c9e01d.jpg", title: "Astro Boy" },
+    { url: "https://i.pinimg.com/736x/a6/c7/f5/a6c7f5682b01fc06c83e1017cd36f358.jpg", title: "Jim from 'Treasure Planet'" },
+    { url: "https://i.pinimg.com/736x/3c/da/51/3cda5184c0eff287e89acd5aadfff90e.jpg", title: "Jacob from 'The Sea Beast'" },
+    { url: "https://i.pinimg.com/736x/f9/c5/a6/f9c5a6b8561e4d1e6905806b9e2f8ae5.jpg", title: "Moses from 'The Prince of Egypt'" },
+    { url: "https://i.pinimg.com/736x/ce/1a/73/ce1a731f79a104a8831cc2cd22c81dac.jpg", title: "Larry Boy from 'Veggietales'" },
+    { url: "https://i.pinimg.com/736x/e4/ae/92/e4ae924e190d1a284656297f0b516c4a.jpg", title: "Wild Krats Bros" },
+    { url: "https://i.pinimg.com/736x/ec/ae/10/ecae100a6cce4d47512d9dc8ddc0d2a9.jpg", title: "Bananas in Pajamas" },
+    { url: "https://i.pinimg.com/736x/5d/06/f2/5d06f24e9177e0ad29800f3bfd330b59.jpg", title: "Alfred Hedgehog" }
+
+        ];
+        let username = '';
+        let ratings = [];
+        let currentImageIndex = 0;
+
+        document.getElementById("start-button").addEventListener("click", function() {
+            document.getElementById("welcome-section").style.display = "none";
+            document.getElementById("account-section").style.display = "block";
+        });
+
+        document.getElementById("start-rating-button").addEventListener("click", function() {
+            username = document.getElementById("username").value;
+            if (!username) {
+                alert("Please enter a name");
+                return;
+            }
+            document.getElementById("account-section").style.display = "none";
+            document.getElementById("game-section").style.display = "block";
+            renderSlider();
+        });
+
+        function renderSlider() {
+            const slider = document.getElementById("slider");
+            const currentImage = images[currentImageIndex];
+            const container = document.createElement("div");
+            container.innerHTML = `
+                <h3>${currentImage.title}</h3>
+                <img src="${currentImage.url}" alt="${currentImage.title}">
+                <div class="buttons">
+                    <button class="rate-button real" onclick="rateImage('real')">Real</button>
+                    <button class="rate-button umm" onclick="rateImage('umm')">Umm</button>
+                    <button class="rate-button not-valid" onclick="rateImage('not-valid')">Not Valid</button>
+                </div>
+            `;
+            slider.innerHTML = '';
+            slider.appendChild(container);
+
+            document.getElementById("next-button").style.display = "block";
+            document.getElementById("next-button").onclick = function() {
+                currentImageIndex++;
+                if (currentImageIndex < images.length) {
+                    renderSlider();
+                } else {
+                    alert("End of images!");
+                }
+            };
+        }
+
+        function rateImage(rating) {
+            ratings.push(rating);
+            alert(`You rated this image as ${rating}`);
+        }
+    </script>
+</body>
+</html>
